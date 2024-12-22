@@ -1,0 +1,13 @@
+debug/BancoSingleton.o
+debug/Cliente.o
+debug/Cuenta.o
+debug/CuentaAhorro.o
+debug/CuentaAhorroFactory.o
+debug/CuentaEmpresarial.o
+debug/CuentaJoven.o
+debug/CuentaPlus.o
+debug/CuentaTarjetaCredito.o
+debug/FactoryCuentas.o
+debug/main.o
+debug/mainwindow.o
+debug/moc_mainwindow.o
