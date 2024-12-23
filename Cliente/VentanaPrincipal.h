@@ -35,10 +35,11 @@ private:
     QLineEdit *lineEditTelefono;
     QLineEdit *lineEditCorreo;
     QLineEdit *lineEditEdad;
+    int siguienteId = 1;  // Variable para el ID autoincremental
 
     void cargarDatosDesdeCSV();
     void guardarDatosEnCSV();
-    void limpiarCampos();  // Definir la función para limpiar los campos
+    void limpiarCampos();  // Función para limpiar los campos después de agregar o modificar
 };
 
 #endif // VENTANAPRINCIPAL_H

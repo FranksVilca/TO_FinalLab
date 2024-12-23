@@ -6,7 +6,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     // Cargar la base de datos desde el archivo CSV
-    BaseDeDatos::getInstance()->cargarClientes("csv/clientes.csv");
+    BaseDeDatos::getInstance()->cargarClientes("C:/Users/USER/OneDrive/Escritorio/TO_Lab09/Archivos/clientes.csv");
 
     // Crear e iniciar la ventana principal
     VentanaPrincipal ventana;
