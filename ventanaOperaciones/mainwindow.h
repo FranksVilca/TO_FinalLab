@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "transaccion.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,7 +22,11 @@ private slots:
     void onComboBoxChanged(); // Slot para manejar el cambio de selección en ambos combobox
     void onCancel(); // cancel
     void onConfirmarClicked(); // confrimar
+    bool verificarSaldo();
+    void cargarTransaccionesDesdeCSV();
+
 private:
+    QVector<Transaccion> transacciones;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

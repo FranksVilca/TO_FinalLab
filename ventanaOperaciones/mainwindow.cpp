@@ -1,10 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <iostream>
 #include <QMessageBox>
 #include <QDate>
 #include <QDoubleValidator>  // Para el validador de números
 #include <QDir>
+#include <QDebug>
 #include <QTextStream>
+#include "transaccion.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -13,9 +16,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    //CargaDatos
+    cargarTransaccionesDesdeCSV();
+
     // Inicializar el frame como oculto
     ui->frame->setVisible(false);
-    ui->lineEdit->setReadOnly(true);
     ui->Fecha->setReadOnly(true);
 
     // Conectar los cambios en ambos QComboBox al mismo slot
@@ -28,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButton, &QPushButton::clicked, this, &MainWindow::onConfirmarClicked);  // Conectar el botón "Confirmar"
     connect(ui->pushButton_2, &QPushButton::clicked, this, &MainWindow::onCancel);
-
 }
 
 MainWindow::~MainWindow()
@@ -84,6 +88,12 @@ void MainWindow::onConfirmarClicked() {
         return; // No continuar si algún campo está vacío
     }
 
+    if(tipoOperacionSeleccionado == "Retiro" && verificarSaldo()){
+        QMessageBox::warning(this, "Advertencia", "No Cuenta con ese Saldo Disponible.");
+        return; // No continuar
+    }
+
+
     // Definir la ruta del archivo CSV en la carpeta 'csvRepo'
     QDir dir(currentPath);
     dir.cdUp(); // Subir un nivel
@@ -113,4 +123,80 @@ void MainWindow::onConfirmarClicked() {
     onCancel();
 }
 
+bool MainWindow::verificarSaldo() {
+    double saldo= 0.0;
+    double salidas= 0.0;
+    QString idCuenta = ui->comboBox->currentText();
+    QString idCliente = ui->lineEdit->text();
+    QString montoRetirarStr = ui->txtMonto->text(); // Obtén el texto del QLineEdit
+    bool ok; // Variable para verificar si la conversión fue exitosa
+    double montoRetirar = montoRetirarStr.toDouble(&ok);
+
+    for (const Transaccion& trans : transacciones) {
+
+
+
+        if (trans.getIdCliente() == idCliente  && trans.getIdCuenta() == idCuenta) {
+            double monto = trans.getMonto().toDouble();
+
+            if (trans.getTipoOperacion() == "Deposito") {
+                saldo+= monto;
+            } else if (trans.getTipoOperacion() == "Retiro") {
+                saldo-= monto;
+                salidas += monto;
+            }
+
+            qDebug() << "idCliente" <<trans.getIdCliente();
+            qDebug() << "idCuenta" <<trans.getIdCuenta();
+            qDebug() << "Monto" <<trans.getMonto();
+            qDebug() << "Operacion" <<trans.getTipoOperacion()<<"\n\n";
+        }
+
+        qDebug() << "saldo" <<saldo<<"\n";
+        qDebug() << "Salida" <<salidas<<"\n\n";
+
+
+    }
+
+    montoRetirar+=salidas;
+    return saldo<montoRetirar;
+}
+
+
+void MainWindow::cargarTransaccionesDesdeCSV() {
+    QString currentPath = QCoreApplication::applicationDirPath();
+    QDir dir(currentPath);
+    dir.cdUp();
+    dir.cdUp();
+    dir.cdUp();
+    dir.cdUp();
+    QString filePath = dir.absolutePath() + "/csvRepo/transaccion.csv";
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "Error", "No se pudo abrir el archivo para leer");
+        return;
+    }
+
+    transacciones.clear();
+    QTextStream in(&file);
+
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        QStringList fields = line.split(",");
+
+        if (fields.size() >= 6) {
+            transacciones.append(Transaccion(
+                fields[0], // idCliente
+                fields[1], // idCuenta
+                fields[2], // tipoOperacion
+                fields[3], // monto
+                fields[4], // fecha
+                fields[5]  // descripcion
+                ));
+        }
+    }
+
+    file.close();
+}
 

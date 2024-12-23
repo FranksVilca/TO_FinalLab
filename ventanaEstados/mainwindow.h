@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "transaccion.h"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -17,10 +18,19 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void cargarCuentasCliente();
+    void onComboBoxChanged(int index);
+    void onVerTotalClicked();
+
  // Slot para manejar el cambio de selección en ambos combobox
 private:
     Ui::MainWindow *ui;
-    void cargarTransacciones();
-    void cargarCuentasCliente();
+    QVector<Transaccion> transacciones;
+    void cargarTransaccionesDesdeCSV();
+    void calcularTotales(const QString& idCliente);
+    void calcularEstadoCuenta();
+    void mostrarTransaccionesFiltradas(const QString& idCliente, const QString& idCuenta);
+
 };
 #endif // MAINWINDOW_H

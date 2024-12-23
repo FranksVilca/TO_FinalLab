@@ -1,0 +1,13 @@
+release/BancoSingleton.o
+release/Cliente.o
+release/Cuenta.o
+release/CuentaAhorro.o
+release/CuentaAhorroFactory.o
+release/CuentaEmpresarial.o
+release/CuentaJoven.o
+release/CuentaPlus.o
+release/CuentaTarjetaCredito.o
+release/FactoryCuentas.o
+release/main.o
+release/mainwindow.o
+release/moc_mainwindow.o
