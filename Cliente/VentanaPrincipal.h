@@ -26,6 +26,7 @@ private slots:
     void onAgregarCliente();
     void onModificarCliente();
     void onEliminarCliente();
+    int generarNuevoId();
 
 private:
     Ui::VentanaPrincipal *ui;

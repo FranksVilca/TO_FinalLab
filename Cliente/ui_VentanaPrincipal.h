@@ -37,8 +37,8 @@ public:
         // Crear los widgets
         tablaClientes = new QTableWidget(VentanaPrincipal);
         tablaClientes->setObjectName(QString::fromUtf8("tablaClientes"));
-        tablaClientes->setColumnCount(5); // Se incrementa la cantidad de columnas
-        tablaClientes->setHorizontalHeaderLabels({"Nombre", "Dirección", "Teléfono", "Correo Electrónico", "Edad"}); // Se agrega "Edad"
+        tablaClientes->setColumnCount(6); // Se incrementa la cantidad de columnas
+        tablaClientes->setHorizontalHeaderLabels({"ID","Nombre", "Dirección", "Teléfono", "Correo Electrónico", "Edad"}); // Se agrega "Edad"
 
         lineEditNombre = new QLineEdit(VentanaPrincipal);
         lineEditNombre->setObjectName(QString::fromUtf8("lineEditNombre"));
@@ -69,6 +69,7 @@ public:
         horizontalLayout2 = new QHBoxLayout();
 
         // Agregar widgets al layout
+        horizontalLayout1->addWidget(new QLabel("ID:"));
         horizontalLayout1->addWidget(new QLabel("Nombre:"));
         horizontalLayout1->addWidget(lineEditNombre);
         horizontalLayout1->addWidget(new QLabel("Dirección:"));
@@ -78,8 +79,8 @@ public:
         horizontalLayout2->addWidget(lineEditTelefono);
         horizontalLayout2->addWidget(new QLabel("Correo:"));
         horizontalLayout2->addWidget(lineEditCorreo);
-        horizontalLayout2->addWidget(new QLabel("Edad:")); // Agregar etiqueta para la edad
-        horizontalLayout2->addWidget(lineEditEdad); // Agregar QLineEdit para la edad
+        horizontalLayout2->addWidget(new QLabel("Edad:"));
+        horizontalLayout2->addWidget(lineEditEdad);
 
         verticalLayout->addLayout(horizontalLayout1);
         verticalLayout->addLayout(horizontalLayout2);

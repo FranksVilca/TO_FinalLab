@@ -20,13 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // Inicializar la lista de clientes
-    clientes = Cliente::cargarClientesDesdeCSV("C:/Users/USER/OneDrive/Escritorio/TO_Lab09/Cliente/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/clientes.csv");
+    clientes = Cliente::cargarClientesDesdeCSV("C:/Users/USER/OneDrive/Escritorio/TO_Lab09/csvRepo/clientes.csv");
 
     // Agregar los clientes al QComboBox
     for (const Cliente &cliente : clientes) {
         ui->comboBoxClientes->addItem(cliente.getNombre(), cliente.getId());
     }
-    cargarCuentasDesdeCSV("C:/Users/USER/OneDrive/Escritorio/TO_Lab09/Cuenta/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/cuentas.csv");
+    cargarCuentasDesdeCSV("C:/Users/USER/OneDrive/Escritorio/TO_Lab09/csvRepo/cuentas.csv");
 
     // Conectar botones con sus acciones
     connect(ui->buttonCrear, &QPushButton::clicked, this, &MainWindow::crearCuenta);
@@ -143,7 +143,7 @@ void MainWindow::crearCuenta() {
     }
 
     BancoSingleton::obtenerInstancia()->crearCuenta(nuevaCuenta);
-    BancoSingleton::obtenerInstancia()->guardarCuentasEnCSV("cuentas.csv");
+    BancoSingleton::obtenerInstancia()->guardarCuentasEnCSV("C:/Users/USER/OneDrive/Escritorio/TO_Lab09/csvRepo/cuentas.csv");
 
     QString fechaCreacion = QDate::currentDate().toString("dd/MM/yyyy");
 
@@ -187,7 +187,7 @@ void MainWindow::eliminarCuenta() {
         ui->tableWidgetCuentas->removeRow(row);
 
         // Volver a guardar los datos en el archivo CSV después de eliminar
-        BancoSingleton::obtenerInstancia()->guardarCuentasEnCSV("cuentas.csv");
+        BancoSingleton::obtenerInstancia()->guardarCuentasEnCSV("C:/Users/USER/OneDrive/Escritorio/TO_Lab09/csvRepo/cuentas.csv");
 
         QMessageBox::information(this, "Éxito", "Cuenta eliminada correctamente.");
     } else {

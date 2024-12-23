@@ -1,9 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QProcess>
+#include <QFile>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , process(new QProcess(this)) // Initialize QProcess
 {
     ui->setupUi(this);
 
@@ -30,23 +34,27 @@ void MainWindow::onLoginClicked()
         ui->labelMessage->setStyleSheet("color: green;");
         ui->labelMessage->setText("Inicio de sesión exitoso.");
         onVistaAdmin();
-        // Aquí puedes agregar la lógica para abrir una nueva ventana o continuar
     } else {
         ui->labelMessage->setStyleSheet("color: red;");
         ui->labelMessage->setText("Usuario o contraseña incorrectos.");
     }
 }
+
 // Slot que se ejecuta al hacer clic en "Gestionar Usuarios"
 void MainWindow::onVistaAdmin()
 {
     // Ruta al ejecutable del otro proyecto
-    QString programPath = "C:/Users/USER/OneDrive/Escritorio/TO_Lab09/PantallaAdmin/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/debug/PantallaAdmin.exe"; 
+    QString programPath = "C:/Users/USER/OneDrive/Escritorio/TO_Lab09/PantallaAdmin/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/debug/PantallaAdmin.exe";
 
-    // Inicia el otro proyecto
-    process->start(programPath);
+    // Verifica si el archivo ejecutable existe
+    if (QFile::exists(programPath)) {
+        process->start(programPath);
 
-    // Verifica si el proceso se inició correctamente
-    if (!process->waitForStarted()) {
-        qDebug() << "No se pudo iniciar el proyecto:" << process->errorString();
+        // Verifica si el proceso se inició correctamente
+        if (!process->waitForStarted()) {
+            qDebug() << "No se pudo iniciar el proyecto:" << process->errorString();
+        }
+    } else {
+        qDebug() << "El archivo ejecutable no existe en la ruta proporcionada.";
     }
 }

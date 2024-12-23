@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
+#include <QDir>
 
 VentanaPrincipal::VentanaPrincipal(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::VentanaPrincipal)
@@ -33,41 +34,52 @@ VentanaPrincipal::~VentanaPrincipal()
 
 void VentanaPrincipal::cargarDatosDesdeCSV()
 {
-    QFile file("clientes.csv");
+    QFile file("C:/Users/USER/OneDrive/Escritorio/TO_Lab09/csvRepo/clientes.csv");
+
+    // Verificar que el archivo se puede abrir
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream in(&file);
         while (!in.atEnd()) {
             QString line = in.readLine();
             QStringList fields = line.split(",");
-            if (fields.size() == 5) {  // Se espera un campo más para la edad
+            if (fields.size() == 6) {  // Se espera un campo más para la edad
                 int row = tablaClientes->rowCount();
                 tablaClientes->insertRow(row);
-                tablaClientes->setItem(row, 0, new QTableWidgetItem(fields[0]));
-                tablaClientes->setItem(row, 1, new QTableWidgetItem(fields[1]));
-                tablaClientes->setItem(row, 2, new QTableWidgetItem(fields[2]));
-                tablaClientes->setItem(row, 3, new QTableWidgetItem(fields[3]));
-                tablaClientes->setItem(row, 4, new QTableWidgetItem(fields[4])); // Mostrar edad
+                tablaClientes->setItem(row, 0, new QTableWidgetItem(fields[0]));  // ID
+                tablaClientes->setItem(row, 1, new QTableWidgetItem(fields[1]));  // Nombre
+                tablaClientes->setItem(row, 2, new QTableWidgetItem(fields[2]));  // Dirección
+                tablaClientes->setItem(row, 3, new QTableWidgetItem(fields[3]));  // Teléfono
+                tablaClientes->setItem(row, 4, new QTableWidgetItem(fields[4]));  // Correo
+                tablaClientes->setItem(row, 5, new QTableWidgetItem(fields[5]));  // Edad
             }
         }
         file.close();
+    } else {
+        QMessageBox::critical(this, "Error", "No se pudo abrir el archivo CSV para cargar los datos.");
     }
 }
 
 void VentanaPrincipal::guardarDatosEnCSV()
 {
-    QFile file("clientes.csv");
-    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        QTextStream out(&file);
-        for (int row = 0; row < tablaClientes->rowCount(); ++row) {
-            QString nombre = tablaClientes->item(row, 0)->text();
-            QString direccion = tablaClientes->item(row, 1)->text();
-            QString telefono = tablaClientes->item(row, 2)->text();
-            QString correo = tablaClientes->item(row, 3)->text();
-            QString edad = tablaClientes->item(row, 4)->text(); // Obtener edad
-            out << nombre << "," << direccion << "," << telefono << "," << correo << "," << edad << "\n";
-        }
-        file.close();
+    QFile file("C:/Users/USER/OneDrive/Escritorio/TO_Lab09/csvRepo/clientes.csv");
+
+    // Verificar que se pueda abrir el archivo
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        QMessageBox::critical(this, "Error", "No se pudo abrir el archivo para guardar los datos.");
+        return;
     }
+
+    QTextStream out(&file);
+    for (int row = 0; row < tablaClientes->rowCount(); ++row) {
+        QString id = tablaClientes->item(row, 0)->text();
+        QString nombre = tablaClientes->item(row, 1)->text();
+        QString direccion = tablaClientes->item(row, 2)->text();
+        QString telefono = tablaClientes->item(row, 3)->text();
+        QString correo = tablaClientes->item(row, 4)->text();
+        QString edad = tablaClientes->item(row, 5)->text();
+        out << id << "," << nombre << "," << direccion << "," << telefono << "," << correo << "," << edad << "\n";
+    }
+    file.close();
 }
 
 void VentanaPrincipal::onAgregarCliente()
@@ -76,21 +88,25 @@ void VentanaPrincipal::onAgregarCliente()
     QString direccion = lineEditDireccion->text();
     QString telefono = lineEditTelefono->text();
     QString correo = lineEditCorreo->text();
-    QString edad = lineEditEdad->text(); // Obtener la edad
+    QString edad = lineEditEdad->text();
 
     if (nombre.isEmpty() || direccion.isEmpty() || telefono.isEmpty() || correo.isEmpty() || edad.isEmpty()) {
         QMessageBox::warning(this, "Advertencia", "Todos los campos deben ser completos.");
         return;
     }
 
+    // Generar el ID automáticamente (se asigna el siguiente número disponible)
+    int id = generarNuevoId();
+
     // Agregar el cliente a la tabla
     int row = tablaClientes->rowCount();
     tablaClientes->insertRow(row);
-    tablaClientes->setItem(row, 0, new QTableWidgetItem(nombre));
-    tablaClientes->setItem(row, 1, new QTableWidgetItem(direccion));
-    tablaClientes->setItem(row, 2, new QTableWidgetItem(telefono));
-    tablaClientes->setItem(row, 3, new QTableWidgetItem(correo));
-    tablaClientes->setItem(row, 4, new QTableWidgetItem(edad)); // Insertar la edad
+    tablaClientes->setItem(row, 0, new QTableWidgetItem(QString::number(id)));  // Mostrar ID
+    tablaClientes->setItem(row, 1, new QTableWidgetItem(nombre));              // Nombre
+    tablaClientes->setItem(row, 2, new QTableWidgetItem(direccion));           // Dirección
+    tablaClientes->setItem(row, 3, new QTableWidgetItem(telefono));           // Teléfono
+    tablaClientes->setItem(row, 4, new QTableWidgetItem(correo));             // Correo
+    tablaClientes->setItem(row, 5, new QTableWidgetItem(edad));               // Edad
 
     // Guardar los cambios en el archivo CSV
     guardarDatosEnCSV();
@@ -98,7 +114,6 @@ void VentanaPrincipal::onAgregarCliente()
     // Limpiar los campos después de agregar
     limpiarCampos();
 }
-
 
 void VentanaPrincipal::onModificarCliente()
 {
@@ -122,11 +137,11 @@ void VentanaPrincipal::onModificarCliente()
     }
 
     // Actualizar la fila seleccionada con los nuevos valores
-    tablaClientes->item(row, 0)->setText(nombre);     // Nombre
-    tablaClientes->item(row, 1)->setText(direccion);  // Dirección
-    tablaClientes->item(row, 2)->setText(telefono);   // Teléfono
-    tablaClientes->item(row, 3)->setText(correo);     // Correo
-    tablaClientes->item(row, 4)->setText(edad);       // Edad
+    tablaClientes->item(row, 1)->setText(nombre);     // Nombre
+    tablaClientes->item(row, 2)->setText(direccion);  // Dirección
+    tablaClientes->item(row, 3)->setText(telefono);   // Teléfono
+    tablaClientes->item(row, 4)->setText(correo);     // Correo
+    tablaClientes->item(row, 5)->setText(edad);       // Edad
 
     // Guardar los cambios en el archivo CSV
     guardarDatosEnCSV();
@@ -134,7 +149,6 @@ void VentanaPrincipal::onModificarCliente()
     // Limpiar los campos después de modificar
     limpiarCampos();
 }
-
 
 void VentanaPrincipal::onEliminarCliente()
 {
@@ -157,4 +171,13 @@ void VentanaPrincipal::limpiarCampos()
     lineEditTelefono->clear();
     lineEditCorreo->clear();
     lineEditEdad->clear();
+}
+
+int VentanaPrincipal::generarNuevoId()
+{
+    int id = 1;
+    if (tablaClientes->rowCount() > 0) {
+        id = tablaClientes->item(tablaClientes->rowCount() - 1, 0)->text().toInt() + 1;  // Incrementar el último ID
+    }
+    return id;
 }
