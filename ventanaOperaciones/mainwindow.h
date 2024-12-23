@@ -19,7 +19,8 @@ public:
 
 private slots:
     void onComboBoxChanged(); // Slot para manejar el cambio de selección en ambos combobox
-
+    void onCancel(); // cancel
+    void onConfirmarClicked(); // confrimar
 private:
     Ui::MainWindow *ui;
 };

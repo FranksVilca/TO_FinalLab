@@ -17,7 +17,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+ // Slot para manejar el cambio de selección en ambos combobox
 private:
     Ui::MainWindow *ui;
+    void cargarTransacciones();
+    void cargarCuentasCliente();
 };
 #endif // MAINWINDOW_H
